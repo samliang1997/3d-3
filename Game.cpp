@@ -35,7 +35,7 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 	m_currentCam = new FirstPerson(m_input,Vector3());
 
 	m_collisionManager = new CollisionManager(&m_playerCollision, &m_healCapsule);
-	return true;
+	
 
 	if (!InitShaders())
 		return false;
