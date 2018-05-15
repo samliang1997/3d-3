@@ -29,6 +29,7 @@ GameObject::GameObject(Mesh* mesh, Shader* shader, Texture* texture)
 	m_mesh = mesh;
 	m_texture = texture;
 	m_shader = shader;
+
 }
 GameObject::GameObject(Mesh* mesh, Shader* shader, Vector3 position)
 {
@@ -49,6 +50,7 @@ GameObject::GameObject(Mesh* mesh, Shader* shader, Texture* texture, Vector3 pos
 	m_mesh = mesh;
 	m_texture = texture;
 	m_shader = shader;
+	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 
 GameObject::~GameObject() {}

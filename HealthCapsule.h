@@ -12,6 +12,9 @@ public:
 	void Update(float timestep);
 
 	CBoundingBox GetBounds() { return m_boundingBox; }
+	void OnKartCollisionEnter();
+	void OnKartCollisionStay();
+	void OnKartCollisionExit();
 
 	~HealthCapsule();
 private:

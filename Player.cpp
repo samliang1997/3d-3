@@ -12,13 +12,11 @@ Player::Player()
 	//m_monstersDefeated = 0;
 	//m_movesRemaining = MAX_MOVES;
 
-	m_boundingBox = CBoundingBox(
-		m_position + m_mesh->GetMin(),
-		m_position + m_mesh->GetMax());
+	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(),m_position + m_mesh->GetMax());
 	
 }
 
-Player::Player(Mesh* mesh, Shader* shader, Texture* texture, InputController* input, Vector3 position)
+Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, InputController* input)
 	: GameObject(mesh, shader, texture, position)
 {
 	m_input = input;
@@ -28,14 +26,14 @@ Player::Player(Mesh* mesh, Shader* shader, Texture* texture, InputController* in
 	//m_monstersDefeated = 0;
 	//m_movesRemaining = MAX_MOVES;
 	m_position = Vector3::Zero;
+
+	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 
 Player::~Player() {}
 
 void Player::Update(float timestep)
 {
-
-	
 	// We need to identify the frame input was received so we can perform common logic
 	// outside of the GetKeyDown IF statements below.
 
@@ -58,6 +56,39 @@ void Player::Update(float timestep)
 
 	m_boundingBox.SetMin(m_position + m_mesh->GetMin());
 	m_boundingBox.SetMax(m_position + m_mesh->GetMax());
+}
+
+void Player::OnKartCollisionEnter(Player * other)
+{
+	OutputDebugString("Kart-Kart Collision Enter\n");
+}
+
+void Player::OnKartCollisionStay(Player* other)
+{
+	OutputDebugString("Kart-Kart Collision Stay\n");
+}
+
+void Player::OnKartCollisionExit(Player* other)
+{
+	OutputDebugString("Kart-Kart Collision Exit\n");
+}
+
+void Player::OnItemBoxCollisionEnter(GameObject* other)
+{
+	OutputDebugString("Kart-ItemBox Collision Enter\n");
+
+	// Bounce off box - how could you take our velocity into account?
+	//ApplyForce((m_position - other->GetPosition()) * 0.5f);
+}
+
+void Player::OnItemBoxCollisionStay(GameObject* other)
+{
+	OutputDebugString("Kart-ItemBox Collision Stay\n");
+}
+
+void Player::OnItemBoxCollisionExit(GameObject* other)
+{
+	OutputDebugString("Kart-ItemBox Collision Exit\n");
 }
 
 /*void Player::FinishTurn()

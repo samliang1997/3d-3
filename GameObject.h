@@ -10,12 +10,14 @@ class GameObject
 protected:
 	Vector3 m_position;
 	float m_rotX, m_rotY, m_rotZ;
-	float m_scaleX, m_scaleY, m_scaleZ;
+	float m_scaleX, m_scaleZ,m_scaleY;
 
 	Matrix m_world;
 	Mesh* m_mesh;
 	Texture* m_texture;
 	Shader* m_shader;
+
+	CBoundingBox m_boundingBox;
 
 public:
 	GameObject();
@@ -34,9 +36,9 @@ public:
 	float GetXRotation() { return m_rotX; }
 	float GetYRotation() { return m_rotY; }
 	float GetZRotation() { return m_rotZ; }
-	float GetXScale() { return m_scaleX; }
+	float GetXScale() { return m_scaleX*0.1; }
 	float GetYScale() { return m_scaleY; }
-	float GetZScale() { return m_scaleZ; }
+	float GetZScale() { return m_scaleZ*0.1; }
 	Mesh* GetMesh() { return m_mesh; }
 	Texture* GetTexture() { return m_texture; }
 	Shader* GetShader() { return m_shader; }
@@ -53,6 +55,9 @@ public:
 	void SetMesh(Mesh* mesh) { m_mesh = mesh; }
 	void SetTexture(Texture* texture) { m_texture = texture; }
 	void SetShader(Shader* shader) { m_shader = shader; }
+
+	//Collision
+	CBoundingBox GetBounds() { return m_boundingBox; }
 };
 
 #endif

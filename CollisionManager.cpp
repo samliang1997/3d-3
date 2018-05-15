@@ -1,9 +1,9 @@
 #include "CollisionManager.h"
 
-CollisionManager::CollisionManager(std::vector<Player*>* player, std::vector<HealthCapsule*>* healthCapslue)
+CollisionManager::CollisionManager(Player* player, vector<GameObject*>* itemBoxes)
 {
-	m_player = player;
-	m_healthCapslue = healthCapslue;
+	m_playerCollision = player;
+	m_itemBoxes = itemBoxes;//new add
 
 	// Clear our arrays to 0 (NULL)
 	memset(m_currentCollisions, 0, sizeof(m_currentCollisions));
@@ -15,8 +15,8 @@ CollisionManager::CollisionManager(std::vector<Player*>* player, std::vector<Hea
 void CollisionManager::CheckCollisions()
 {
 	// Check kart to item box collisions
-	KartToItemBox();
-	//KartToKart();
+	PlayerToItemBox();//new add
+	
 
 	// Move all current collisions into previous
 	memcpy(m_previousCollisions, m_currentCollisions, sizeof(m_currentCollisions));
@@ -57,48 +57,46 @@ void CollisionManager::AddCollision(GameObject* first, GameObject* second)
 	m_nextCurrentCollisionSlot += 2;
 }
 
-void CollisionManager::KartToItemBox()
+void CollisionManager::PlayerToItemBox()
 {
 	// We'll check each kart against every item box
 	// Note this is not overly efficient, both in readability and runtime performance
-
-	for (unsigned int i = 0; i < m_player->size(); i++)
-	{
-		for (unsigned int j = 0; j < m_healthCapslue->size(); j++)
+		for (unsigned int j = 0; j < m_itemBoxes->size(); j++)//new add
 		{
 			// Don't need to store pointer to these objects again but favouring clarity
 			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
-			Player* player = (*m_player)[i];
-			HealthCapsule* healthCapslue = (*m_healthCapslue)[i];
+			Player* player = m_playerCollision;
+			GameObject* itemBox = (*m_itemBoxes)[j];//new add
 
 			CBoundingBox playerBounds = player->GetBounds();
-			CBoundingBox  healthCapslueBounds = healthCapslue->GetBounds();
+			CBoundingBox itemBoxBounds = itemBox->GetBounds();//new add
 
 			// Are they colliding this frame?
-			bool isColliding = CheckCollision(playerBounds, healthCapslueBounds);
+			bool isColliding = CheckCollision(playerBounds, itemBoxBounds);//new add
 
 			// Were they colliding last frame?
-			bool wasColliding = ArrayContainsCollision(m_previousCollisions, player, healthCapslue);
+			bool wasColliding = ArrayContainsCollision(m_previousCollisions, player, itemBox);//new add
 
 			if (isColliding)
 			{
 				// Register the collision
-				AddCollision(player, healthCapslue);
+				AddCollision(player, itemBox);//NEW ADD
 
 				if (wasColliding)
 				{
 					// We are colliding this frame and we were also colliding last frame - that's a collision stay
 					// Tell the item box a kart has collided with it (we could pass it the actual kart too if we like)
-					OutputDebugString("Kart-Kart Collision Stay\n");
+					//OutputDebugString("Kart-Kart Collision Stay\n");
 					//healthCapslue->OnKartCollisionStay();
-					//player->OnItemBoxCollisionStay(itemBox);
+					player->OnItemBoxCollisionStay(itemBox);//new add
 				}
 				else
 				{
 					// We are colliding this frame and we weren't last frame - that's a collision enter
 					//itemBox->OnKartCollisionEnter();
 					//kart->OnItemBoxCollisionEnter(itemBox);
-					OutputDebugString("Kart-Kart Collision Enter\n");
+					//OutputDebugString("Kart-Kart Collision Enter\n");
+					player->OnItemBoxCollisionEnter(itemBox);//new add
 				}
 			}
 			else
@@ -108,74 +106,11 @@ void CollisionManager::KartToItemBox()
 					// We aren't colliding this frame but we were last frame - that's a collision exit
 					//itemBox->OnKartCollisionExit();
 					//kart->OnItemBoxCollisionExit(itemBox);
-					OutputDebugString("Kart-Kart Collision Exit\n");
+					//OutputDebugString("Kart-Kart Collision Exit\n");
+					player->OnItemBoxCollisionExit(itemBox);//new add
 				}
 			}
 		}
 	}
-}
 
-/*void CollisionManager::KartToKart()
-{
-	// We'll check each kart against every other kart
-	// Note this is not overly efficient, both in readability and runtime performance
 
-	for (int i = 0; i < m_karts->size(); i++)
-	{
-		for (int j = 0; j < m_karts->size(); j++)
-		{
-			// Don't need to store pointer to these objects again but favouring clarity
-			Kart* firstKart = (*m_karts)[i];
-			Kart* secondKart = (*m_karts)[j];
-
-			// Don't compare a kart to itself
-			// Comparing memory addresses - beauty of pointers
-			if (firstKart != secondKart)
-			{
-				CBoundingBox firstBounds = firstKart->GetBounds();
-				CBoundingBox secondBounds = secondKart->GetBounds();
-
-				// Do we already know about a collision between these two karts
-				bool alreadyHandled = ArrayContainsCollision(m_currentCollisions, firstKart, secondKart);
-
-				if (!alreadyHandled)
-				{
-					// Are they colliding this frame?
-					bool isColliding = CheckCollision(firstBounds, secondBounds);
-
-					// Were they colliding last frame?
-					bool wasColliding = ArrayContainsCollision(m_previousCollisions, firstKart, secondKart);
-
-					if (isColliding)
-					{
-						// Register the collision
-						AddCollision(firstKart, secondKart);
-
-						if (wasColliding)
-						{
-							// We are colliding this frame and we were also colliding last frame - that's a collision stay
-							// Tell both karts so they can respond. Also give each one the other kart.
-							firstKart->OnKartCollisionStay(secondKart);
-							secondKart->OnKartCollisionStay(firstKart);
-						}
-						else
-						{
-							// We are colliding this frame and we weren't last frame - that's a collision enter
-							firstKart->OnKartCollisionEnter(secondKart);
-							secondKart->OnKartCollisionEnter(firstKart);
-						}
-					}
-					else
-					{
-						if (wasColliding)
-						{
-							// We aren't colliding this frame but we were last frame - that's a collision exit
-							firstKart->OnKartCollisionExit(secondKart);
-							secondKart->OnKartCollisionExit(firstKart);
-						}
-					}
-				}
-			}
-		}
-	}
-}*/

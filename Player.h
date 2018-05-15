@@ -15,7 +15,7 @@
 
 class Player : public GameObject
 {
-private:
+protected:
 	// A Player should listen for its own input
 	InputController* m_input;
 
@@ -46,7 +46,7 @@ private:
 
 public:
 	Player();
-	Player(Mesh* mesh, Shader* shader, Texture* texture, InputController* input, Vector3 position);
+	Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,InputController* input);
 	~Player();
 
 	void Update(float timestep);
@@ -60,6 +60,15 @@ public:
 	int GetScore() { return m_score; }
 
 	CBoundingBox GetBounds() { return m_boundingBox; }
+
+	void OnKartCollisionEnter(Player* other);
+	void OnKartCollisionStay(Player* other);
+	void OnKartCollisionExit(Player* other);
+
+	void OnItemBoxCollisionEnter(GameObject* other);
+	void OnItemBoxCollisionStay(GameObject* other);
+	void OnItemBoxCollisionExit(GameObject* other);
+
 };
 
 #endif

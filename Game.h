@@ -16,11 +16,12 @@
 #include "MeshManager.h"
 #include "TextureManager.h"
 #include "GameObject.h"
+#include "StaticObject.h"
 #include "CollisionManager.h"
 #include "Player.h"
 #include "Monster.h"
 #include "HealthCapsule.h"
-
+#include "Wall.h"
 #include <vector>
 
 #include "DirectXTK/SpriteBatch.h"
@@ -45,7 +46,7 @@ private:
 	Shader* m_diffuseTexturedFogShader;
 
 
-	//Sprites /Fonts/new add
+	//Sprites /Fonts
 	SpriteBatch* m_spriteBatch;
 	SpriteFont* m_arialFont12;
 	SpriteFont* m_arialFont18;
@@ -57,21 +58,26 @@ private:
 
 	Player* m_player;
 	
+	StaticObject* m_ground;
+	StaticObject* m_wall;
+	StaticObject* m_disableditem;
 
 	// This contains everything for easy calls to update and render
 	vector<GameObject*> m_gameObjects;
 	vector<Monster*> m_monster;
 
 	// We also need more specific collections for easier collision checks
-	vector<Player*> m_playerCollision;
-	vector<HealthCapsule*> m_healCapsule;
-	
+	Player* m_playerCollision;
+	vector<HealthCapsule*> m_heal;
+	//vector<Wall*> m_wallCollision;
+	vector<GameObject*> m_itemBoxes;//new add
 
 	// Splitting initialisation up into several steps
 	bool InitShaders();
 	bool LoadMeshes();
 	bool LoadTextures();
-	void InitGameWorld();
+	void InitGameWorld(); 
+	//void InitWall();
 	void InitPlayer();
 	void InitMonster();
 	void InitHealthCapsule();

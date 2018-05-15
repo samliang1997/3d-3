@@ -7,13 +7,14 @@
 #include "HealthCapsule.h"
 #include "GameObject.h"
 
+using namespace std;
 #define MAX_ALLOWED_COLLISIONS 2048
 
 class CollisionManager
 {
 private:
-	std::vector<Player*>* m_playerCollision;
-	std::vector<HealthCapsule*>* m_healthCapslue;
+	Player* m_playerCollision;
+	vector<GameObject*>* m_itemBoxes;//new add
 
 	GameObject* m_currentCollisions[MAX_ALLOWED_COLLISIONS];
 
@@ -29,13 +30,14 @@ private:
 	void AddCollision(GameObject* first, GameObject* second);
 
 	// Collision check helpers
-	void KartToItemBox();
+	void PlayerToItemBox();
 	//void KartToKart();
 
 public:
-	CollisionManager(std::vector<Player*>* player, std::vector<HealthCapsule*>* healthCapslue);
+	CollisionManager(Player* player, vector<GameObject*> *itemBoxes);//new add
 	void CheckCollisions();
 
 };
 
 #endif
+

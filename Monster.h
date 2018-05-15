@@ -16,15 +16,17 @@ private:
 	int m_health;
 	int m_skill;
 	bool m_isAlive;
-
+	Player* m_objectTolookAt;
 
 public:
 	Monster();
-	Monster(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position);
+	Monster(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,Player* lookat);
 	~Monster();
 
 	int Attack();
 	void BeHit(int amount);
+
+	void MonFaceTo();
 
 	bool IsAlive() { return m_isAlive; }
 	int GetSkill() { return m_skill; }

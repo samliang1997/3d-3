@@ -27,22 +27,28 @@ void Monster::BeHit(int amount)
 	}
 }
 
-Monster::Monster(Mesh* mesh, Shader* shader, Texture* texture,Vector3 position):GameObject(mesh,shader,texture,position)
+void Monster::MonFaceTo()
 {
+	//m_objectToLookAt must be set as the player object when the game is initialised
+	// directionToPlayer = the vector from the Enemy to the player
+	// calculated using vector subtraction (see lecture notes for week 2)
+	Vector3 directionToPlayer = m_objectTolookAt->GetPosition() - m_position;
+	// Normalize the vector to get a vector of unit length 
+	directionToPlayer.Normalize();
+	// Calculate the angle the enemy should be facing
+	// There are a couple of ways to do this, atan2 is fairly straightforward
+	m_rotY = atan2(directionToPlayer.x, directionToPlayer.z);
+}
+
+Monster::Monster(Mesh* mesh, Shader* shader, Texture* texture,Vector3 position,Player* lookat):GameObject(mesh,shader,texture,position)
+{
+	m_objectTolookAt = lookat;
 
 }
 
 
 void Monster::Update(float timestep)
 {
-	//m_objectToLookAt must be set as the player object when the game is initialised
-	// directionToPlayer = the vector from the Enemy to the player
-	// calculated using vector subtraction (see lecture notes for week 2)
-	//Vector3 directionToPlayer = m_objectToLookAt->GetPosition() - m_position;
-	// Normalize the vector to get a vector of unit length 
-	//directionToPlayer.Normalize();
-	// Calculate the angle the enemy should be facing
-	// There are a couple of ways to do this, atan2 is fairly straightforward
-	//m_rotX = atan2(directionToPlayer.x, directionToPlayer.z);
-
+	MonFaceTo();
 }
+
