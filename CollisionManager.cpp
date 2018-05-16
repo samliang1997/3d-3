@@ -1,9 +1,9 @@
 #include "CollisionManager.h"
 
-CollisionManager::CollisionManager(Player* player, vector<GameObject*>* itemBoxes)
+CollisionManager::CollisionManager(Player* player, vector<HealthCapsule*>* itemBoxes)
 {
 	m_playerCollision = player;
-	m_itemBoxes = itemBoxes;//new add
+	m_heal = itemBoxes;//new add
 
 	// Clear our arrays to 0 (NULL)
 	memset(m_currentCollisions, 0, sizeof(m_currentCollisions));
@@ -61,15 +61,15 @@ void CollisionManager::PlayerToItemBox()
 {
 	// We'll check each kart against every item box
 	// Note this is not overly efficient, both in readability and runtime performance
-		for (unsigned int j = 0; j < m_itemBoxes->size(); j++)//new add
+		for (unsigned int j = 0; j < m_heal->size(); j++)//new add
 		{
 			// Don't need to store pointer to these objects again but favouring clarity
 			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
 			Player* player = m_playerCollision;
-			GameObject* itemBox = (*m_itemBoxes)[j];//new add
+			HealthCapsule* itemBox = (*m_heal)[j];//new add
 
-			CBoundingBox playerBounds = player->GetBounds();
-			CBoundingBox itemBoxBounds = itemBox->GetBounds();//new add
+			CBoundingBox playerBounds = m_playerCollision->GetBounds();
+			CBoundingBox itemBoxBounds = (*m_heal)[j]->GetBounds();//new add
 
 			// Are they colliding this frame?
 			bool isColliding = CheckCollision(playerBounds, itemBoxBounds);//new add

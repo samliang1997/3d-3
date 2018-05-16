@@ -50,7 +50,7 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 
 	m_currentCam = new FirstPerson(m_input, Vector3());
 
-	m_collisionManager = new CollisionManager(m_player, &m_itemBoxes);
+	m_collisionManager = new CollisionManager(m_playerCollision, &m_heal);
 
 	return true;
 }
@@ -351,7 +351,7 @@ void Game::Render()
 		m_gameObjects[i]->Render(m_renderer, m_currentCam);
 	}
 
-	m_player->Render(m_renderer, m_currentCam);
+	//m_player->Render(m_renderer, m_currentCam);
 
 	for (unsigned int i = 0; i < m_monster.size(); i++)
 	{

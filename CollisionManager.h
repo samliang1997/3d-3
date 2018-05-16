@@ -14,6 +14,7 @@ class CollisionManager
 {
 private:
 	Player* m_playerCollision;
+	vector<HealthCapsule*>* m_heal; //new add
 	vector<GameObject*>* m_itemBoxes;//new add
 
 	GameObject* m_currentCollisions[MAX_ALLOWED_COLLISIONS];
@@ -34,7 +35,7 @@ private:
 	//void KartToKart();
 
 public:
-	CollisionManager(Player* player, vector<GameObject*> *itemBoxes);//new add
+	CollisionManager(Player* player, vector<HealthCapsule*>* itemBoxes);//new add
 	void CheckCollisions();
 
 };
