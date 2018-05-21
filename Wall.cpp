@@ -1,10 +1,10 @@
 #include "Wall.h"
-
+#include "MathsHelper.h"
 
 
 Wall::Wall(Mesh* mesh, Shader* shader, Texture* texture): GameObject(mesh, shader, texture)
 {
-	//m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
+	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 
 

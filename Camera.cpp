@@ -28,7 +28,7 @@ Camera::Camera()
 Camera::Camera(Vector3 pos, Vector3 lookAt, Vector3 up, float aspect, float fov, float nearClip, float farClip)
 {
 	m_position = pos;
-	m_targetPosition = pos;
+	//m_targetPosition = pos;
 	m_lookAtTarget = lookAt;
 	m_up = up;
 
@@ -51,11 +51,11 @@ void Camera::SetPosition(Vector3 pos)
 	m_viewDirty = true;		//Every time a value is changed then the respective matrix is set "dirty"
 }
 
-void Camera::SetTargetPosition(Vector3 pos)
+/*void Camera::SetTargetPosition(Vector3 pos)
 {
 	m_targetPosition = pos;
 	m_viewDirty = true;	
-}
+}*/
 
 void Camera::SetLookAt(Vector3 lookAt)
 {
@@ -95,7 +95,7 @@ void Camera::SetFarClip(float farClip)
 
 void Camera::Update(float timestep)
 {
-	SetPosition(Vector3::Lerp(m_position, m_targetPosition, m_moveSpeed * timestep));
+	//SetPosition(Vector3::Lerp(m_position, m_targetPosition, m_moveSpeed * timestep));
 
 	if (m_viewDirty)	//We will only recalculate a matrix if it is "dirty"
 	{

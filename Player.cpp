@@ -1,8 +1,7 @@
 #include "Player.h"
-#include "Monster.h"
 #include "MathsHelper.h"
 
-Player::Player()
+/*Player::Player()
 {
 	m_input = NULL;
 	m_moveSpeed = 10.0f;
@@ -12,21 +11,28 @@ Player::Player()
 	//m_monstersDefeated = 0;
 	//m_movesRemaining = MAX_MOVES;
 
-	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(),m_position + m_mesh->GetMax());
+	//m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(),m_position + m_mesh->GetMax());
 	
-}
+}*/
 
-Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, InputController* input)
+Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, InputController* input,GameBoard* board)
 	: GameObject(mesh, shader, texture, position)
 {
 	m_input = input;
 	m_moveSpeed = 10.0f;
 	m_health = 100.0f;
 	m_score = 0;
+	m_loaclForward = Vector3(0, 0, 0);
+	m_loaclright = Vector3(0, 0, 0);
+	m_loaclleft = Vector3(0, 0, 0);
+
+	m_heading = 0.0f;
+	m_rotationSpeed = 1.0f;
 	//m_monstersDefeated = 0;
 	//m_movesRemaining = MAX_MOVES;
-	m_position = Vector3::Zero;
+	//m_position = Vector3::Zero;
 
+	m_currentBoard = board;
 	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 
@@ -36,26 +42,37 @@ void Player::Update(float timestep)
 {
 	// We need to identify the frame input was received so we can perform common logic
 	// outside of the GetKeyDown IF statements below.
+	m_heading += m_input->GetMouseDeltaX() * m_rotationSpeed * timestep;
+	Matrix heading = Matrix::CreateRotationY(m_heading);
+	m_loaclForward = Vector3::TransformNormal(Vector3(0, 0, 1), heading);
+	m_loaclbackward = Vector3::TransformNormal(Vector3(0, 0, -1), heading);
+	m_loaclright = Vector3::TransformNormal(Vector3(1, 0, 0), heading);
+	m_loaclleft = Vector3::TransformNormal(Vector3(-1, 0, 0), heading);
 
-	if (m_input->GetKeyHold('W'))
+	if (m_input->GetKeyHold(VK_UP))
 	{
-		m_position += Vector3(0.0f, 0.0f, 1.0f) * m_moveSpeed * timestep;
+		m_position += m_loaclForward * m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold('S'))
+	if (m_input->GetKeyHold(VK_DOWN))
 	{
-		m_position += Vector3(0.0f, 0.0f, -1.0f) * m_moveSpeed * timestep;
+		m_position += m_loaclbackward* m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold('A'))
+	if (m_input->GetKeyHold(VK_LEFT))
 	{
-		m_position += Vector3(-1.0f, 0.0f, 0.0f) * m_moveSpeed * timestep;
+		m_position += m_loaclleft * m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold('D'))
+	if (m_input->GetKeyHold(VK_RIGHT))
 	{
-		m_position += Vector3(1.0f, 0.0f, 0.0f) * m_moveSpeed * timestep;
+		m_position += m_loaclright * m_moveSpeed * timestep;
 	}
 
+	if(m_input->GetMouseUp(0))
+	{
+		m_currentBoard->InitBullet(m_position, m_loaclForward); 
+	}
 	m_boundingBox.SetMin(m_position + m_mesh->GetMin());
 	m_boundingBox.SetMax(m_position + m_mesh->GetMax());
+
 }
 
 void Player::OnKartCollisionEnter(Player * other)
@@ -91,99 +108,13 @@ void Player::OnItemBoxCollisionExit(GameObject* other)
 	OutputDebugString("Kart-ItemBox Collision Exit\n");
 }
 
-/*void Player::FinishTurn()
-{
-	// Even though this is called in an Update function, it's essentially event-driven as it
-	// is only called the frame we receive input from the keyboard.
-
-	// React to tile we're standing on
-	ReactToTile();
-	CheckIfTrapped();
-
-	// Decrease moves remaining
-	m_movesRemaining--;
-
-	// Show health visually as scale of player mesh
-	SetUniformScale(m_health / 100.0f);
-}
-
-bool Player::CanMoveHere(Vector3 target)
-{
-	// Asks the GameBoard for the type of the target tile
-	// We can't step onto a wall or a disabled tile
-
-	TileType targetTileType = m_currentBoard->GetTileTypeForPosition(target.x, target.z);
-
-	return targetTileType != TileType::DISABLED &&
-		   targetTileType != TileType::WALL &&
-		   targetTileType != TileType::INVALID;
-}
-
-void Player::CheckIfTrapped()
-{
-	// Using our target position, ask the GameBoard for the type of 
-	// our surrounding tiles and check if we are surrounded by walls or grey tiles
-
-	m_isTrapped = !CanMoveHere(m_targetPosition + Vector3(0, 0, 1)) &&  // Above
-				  !CanMoveHere(m_targetPosition + Vector3(0, 0, -1)) && // Below
-				  !CanMoveHere(m_targetPosition + Vector3(-1, 0, 0)) && // Left
-				  !CanMoveHere(m_targetPosition + Vector3(1, 0, 0));    // Right
-}
-
-void Player::ReactToTile()
-{
-	TileType targetTileType = m_currentBoard->GetTileTypeForPosition(m_targetPosition.x, m_targetPosition.z);
-
-	switch (targetTileType)
-	{
-	case TileType::HEALTH:
-		m_health += 5;
-		break;
-	case TileType::DAMAGE:
-		m_health -= 10;
-		break;
-	case TileType::TELEPORT:
-		TeleportToTileOfType(TileType::TELEPORT);
-		break;
-	case TileType::MONSTER_VAR1:
-		// We'll react the same to both types of monster. TODO how could we differentiate them?
-		DoMonsterBattle();
-		break;
-	default:
-		break;
-	}
-}
-
-void Player::TeleportToTileOfType(TileType type)
-{
-	Tile* destinationTile = m_currentBoard->GetRandomTileOfType(type);
-
-	if (destinationTile)
-	{
-		// We need to set both the current position and the target
-		// The only time the player remains still is when these two positions match
-		m_targetPosition = destinationTile->GetPosition();
-		m_position = destinationTile->GetPosition();
-
-		// Tiles start up in the sky and fall down. Ensure player starts on the ground.
-		m_targetPosition.y = 0.0f;
-		m_position.y = 0.0f;
-	}
-}*/
-
-int Player::Attack()
-{
-	// The player is much stronger than any monster on the board
-	return MathsHelper::RandomRange(0, 20);
-}
-
 void Player::BeHit(int amount)
 {
 	// "abs" keeps a value positive
 	m_health -= abs(amount);
 }
 
-void Player::DoMonsterBattle()
+/*void Player::DoMonsterBattle()
 {
 	// A battle takes place within a single frame.
 
@@ -219,4 +150,4 @@ void Player::DoMonsterBattle()
 		m_score += monster.GetSkill();
 		m_monstersDefeated++;
 	}
-}
+}*/

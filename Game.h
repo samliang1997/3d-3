@@ -17,11 +17,11 @@
 #include "TextureManager.h"
 #include "GameObject.h"
 #include "StaticObject.h"
+#include "Collisions.h"
 #include "CollisionManager.h"
 #include "Player.h"
+#include "GameBoard.h"
 #include "Monster.h"
-#include "HealthCapsule.h"
-#include "Wall.h"
 #include <vector>
 
 #include "DirectXTK/SpriteBatch.h"
@@ -57,32 +57,19 @@ private:
 	Texture* m_currentItemSprite;
 
 	Player* m_player;
-	
-	StaticObject* m_ground;
-	StaticObject* m_wall;
-	StaticObject* m_disableditem;
 
 	// This contains everything for easy calls to update and render
-	vector<GameObject*> m_gameObjects;
-	vector<Monster*> m_monster;
-
+	GameBoard* m_gameboard;
+	
 	// We also need more specific collections for easier collision checks
-	Player* m_playerCollision;
-	vector<HealthCapsule*> m_heal;
-	//vector<Wall*> m_wallCollision;
-	vector<GameObject*> m_itemBoxes;//new add
 
 	// Splitting initialisation up into several steps
 	bool InitShaders();
 	bool LoadMeshes();
 	bool LoadTextures();
 	void InitGameWorld(); 
-	//void InitWall();
 	void InitPlayer();
-	void InitMonster();
-	void InitHealthCapsule();
-	
-	
+
 	void LoadFonts();
 	void InitUI();
 	void DrawUI();

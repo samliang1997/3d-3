@@ -10,31 +10,60 @@
 
 #include "MeshManager.h"
 #include "TextureManager.h"
+#include "TexturedShader.h"
+#include "Shader.h"
+#include "Direct3D.h"
+#include "Camera.h"
+#include "HealthCapsule.h"
+#include "Monster.h"
+#include "GameObject.h"
+#include "Wall.h"
+#include "Bullet.h"
+#include "StaticObject.h"
 
+
+#include <vector>
+
+using namespace std;
 class GameBoard
 {
 private:
 	MeshManager* m_meshManager;
 	TextureManager* m_textureManager;
-	Shader* m_tileShader;
 
+	//Shaders
+	Shader* m_diffuseTexturedShader;
 
+	StaticObject* m_ground;
+	vector<StaticObject*> m_wall;
+	vector<StaticObject*> m_disableditem;
+	vector<HealthCapsule*> m_heal;
+	vector<Monster*> m_monster;
+	vector<Bullet*> m_bullet;
+
+	//Player* m_player;
 
 	void Generate();
-	void AddWalls();
+	void InitMonster();
+	void InitHealthCapsule();
+	void InitGameWorld();
+	void InitWall();
+	
 
 public:
 	GameBoard();
-	GameBoard(MeshManager* meshManager, TextureManager* textureManager, Shader* tileShader);
+	GameBoard(MeshManager* meshManager, Shader* diffuseTexturedShader, TextureManager* textureManager);
 	~GameBoard();
 
-	void Update(float timestep);
+	void Update(float timestep, Vector3 playerposition);
 	void Render(Direct3D* renderer, Camera* camera);
 
-	void DeactivateTile(int x, int z);
-
-	void GetRandomMonsterTilePosition();
-
+	void InitBullet(Vector3 position, Vector3 heading);
+	vector<HealthCapsule*> GetHeal() { return m_heal; }
+	vector<Monster*> GetMonster() { return m_monster; }
+	vector<StaticObject*> GetWall() { return m_wall; }
+	vector<StaticObject*> GetDisabledItem() { return m_disableditem; }
+	vector<Bullet*> GetBullet() { return m_bullet; }
 };
 
 #endif

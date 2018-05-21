@@ -6,226 +6,165 @@ GameBoard::GameBoard()
 {
 	m_meshManager = NULL;
 	m_textureManager = NULL;
-	m_tileShader = NULL;
+	m_diffuseTexturedShader = NULL;
 }
 
-GameBoard::GameBoard(MeshManager* meshManager, TextureManager* textureManager, Shader* tileShader)
+GameBoard::GameBoard(MeshManager* meshManager, Shader* shader, TextureManager* textureManager)
 {
-	m_meshManager = meshManager;
+	m_meshManager = meshManager;  
 	m_textureManager = textureManager;
-	m_tileShader = tileShader;
+	m_diffuseTexturedShader = shader;
 
-	
+
 	Generate();
-	GetRandomMonsterTilePosition();
 }
 
 GameBoard::~GameBoard()
 {
-	for (unsigned int z = 0; z < BOARD_HEIGHT; z++)
-	{
-		for (unsigned int x = 0; x < BOARD_WIDTH; x++)
-		{
-			delete m_tiles[z][x];
-			m_tiles[z][x] = NULL;
-		}
-	}
 }
 
-void GameBoard::Update(float timestep)
+void GameBoard::Update(float timestep,Vector3 playerposition)
 {
-	// Update all the tiles we manage.
-	// Our tiles will have an animation so they need to be Updated each frame.
+	m_ground->Update(timestep);
 
-	for (unsigned int z = 0; z < BOARD_HEIGHT; z++)
+	for (int i = 0; i < m_disableditem.size(); i++)
 	{
-		for (unsigned int x = 0; x < BOARD_WIDTH; x++)
-		{
-			m_tiles[z][x]->Update(timestep);
-		}
+		m_disableditem[i]->Update(timestep);		
+	}
+	
+	for (int i = 0; i < m_heal.size(); i++)
+	{
+		m_heal[i]->Update(timestep);
+	}
+	for (int i = 0; i < m_wall.size(); i++)
+	{
+		m_wall[i]->Update(timestep);
+	}
+	for (int i = 0; i < m_monster.size(); i++)
+	{ 
+		m_monster[i]->Update(timestep, playerposition);
+		//InitBullet(m_monster[i]->GetPosition(), m_monster[i]->);
 	}
 
+	for (int i = 0; i < m_bullet.size(); i++)
+	{
+		m_bullet[i]->Update(timestep);
+	}
 }
 
 void GameBoard::Render(Direct3D* renderer, Camera* camera)
 {
-	// Render all the tiles we manage
+	m_ground->Render(renderer, camera);
 
-	for (unsigned int z = 0; z < BOARD_HEIGHT; z++)
+	for (int i = 0; i < m_wall.size(); i++)
 	{
-		for (unsigned int x = 0; x < BOARD_WIDTH; x++)
-		{
-			m_tiles[z][x]->Render(renderer, camera);
-		}
+		m_wall[i]->Render(renderer, camera);
+	}
+
+	for (int i = 0; i < m_disableditem.size(); i++)
+	{
+		m_disableditem[i]->Render(renderer, camera);
+	}
+
+	for (int i = 0; i < m_heal.size(); i++)
+	{
+		m_heal[i]->Render(renderer, camera);
+	}
+
+	for (int i = 0; i < m_monster.size(); i++) 
+	{
+		m_monster[i]->Render(renderer, camera); 
+	}
+
+	for (int i = 0; i < m_bullet.size(); i++)
+	{
+		m_bullet[i]->Render(renderer, camera);
 	}
 }
 
 void GameBoard::Generate()
 {
-	// Just a plain old square world for now. In the week eight lecture, we'll
-	// implement an algorithm which creates cave like structures.
+	m_ground = new StaticObject(m_meshManager->GetMesh("Assets/Meshes/ground.obj"),
+		m_diffuseTexturedShader,
+		m_textureManager->GetTexture("Assets/Textures/ground.png"));
 
-	for (unsigned int z = 1; z < BOARD_HEIGHT - 1; z++)
+	m_ground->SetXScale(0.5f);
+	m_ground->SetZScale(0.5f);
+
+	InitGameWorld();
+	InitWall();
+	InitMonster();
+	InitHealthCapsule();
+}
+
+void GameBoard::InitGameWorld()
+{
+	for (int i = 0; i<200; i++)
 	{
-		for (unsigned int x = 1; x < BOARD_WIDTH - 1; x++)
+		Vector3 position = Vector3(MathsHelper::RandomRange(-69.0f, 69.0f), 0.0f, MathsHelper::RandomRange(-69.0f, 69.0f));
+
+		m_disableditem.push_back(new StaticObject(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
+			m_diffuseTexturedShader,
+			m_textureManager->GetTexture("Assets/Textures/tile_disabled.png"),
+			position));
+	}
+}
+
+void GameBoard::InitHealthCapsule()
+{
+	for (int i = 0; i<20; i++)
+	{
+		Vector3 position = Vector3(MathsHelper::RandomRange(-69.0f, 69.0f), 0.0f, MathsHelper::RandomRange(-69.0f, 69.0f));
+
+		m_heal.push_back(new HealthCapsule(m_meshManager->GetMesh("Assets/Meshes/player_capsule.obj"),
+			m_diffuseTexturedShader,
+			m_textureManager->GetTexture("Assets/Textures/tile_green.png"),
+			position));
+	}
+}
+
+void GameBoard::InitMonster()
+{
+	for (int i = 0; i < 5; i++) 
+	{
+		Vector3 position = Vector3(MathsHelper::RandomRange(-69.0f, 69.0f), 0.0f, MathsHelper::RandomRange(-69.0f, 69.0f));
+		m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
+			m_diffuseTexturedShader,
+			m_textureManager->GetTexture("Assets/Textures/gradient_redPink.png"),
+			position));
+	}
+
+}
+
+void GameBoard::InitWall()
+{
+	for (float i = -70; i < 71; i++)
+	{
+		for (float j = -70; j < 71; j++)
 		{
-			// We give a tile its mesh and shader, but it picks its own texture
-			m_tiles[z][x] = new Tile(m_meshManager->GetMesh("Assets/Meshes/floor_tile.obj"),
-									 m_tileShader,
-									 Vector3(x, 0, z),
-									 m_textureManager);
-		}
-	}
-	AddWalls();
-
-}
-
-void GameBoard::AddWalls()
-{
-	// Adds a strip of walls around the outer edge of the world
-
-	// Outer walls horizontal
-	for (unsigned int x = 0; x < BOARD_WIDTH; x++)
-	{
-		// Top 
-		m_tiles[BOARD_HEIGHT-1][x] = new Tile(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
-			m_tileShader,
-			Vector3(x, 0, BOARD_HEIGHT-1),
-			m_textureManager,
-			TileType::WALL);
-
-		// Bottom
-		m_tiles[0][x] = new Tile(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
-			m_tileShader,
-			Vector3(x, 0, 0),
-			m_textureManager,
-			TileType::WALL);
-	}
-
-	// Outer walls vertical (avoding corners so we don't double up)
-	for (unsigned int z = 1; z < BOARD_HEIGHT - 1; z++)
-	{
-		// Left
-		m_tiles[z][0] = new Tile(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
-			m_tileShader,
-			Vector3(0, 0, z),
-			m_textureManager,
-			TileType::WALL);
-
-		// Right
-		m_tiles[z][BOARD_WIDTH-1] = new Tile(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
-			m_tileShader,
-			Vector3(BOARD_WIDTH - 1, 0, z),
-			m_textureManager,
-			TileType::WALL);
-	}
-}
-
-void GameBoard::DeactivateTile(int x, int z)
-{
-	m_tiles[z][x]->SetType(TileType::DISABLED);
-}
-
-TileType GameBoard::GetTileTypeForPosition(int x, int z)
-{
-	// Index directly into our 2D array using the passed in position.
-
-	// It's possible we may accidentally check a tile outside of the board. 
-	// Even though walls will prevent this, we'll still be defensive.
-
-
-	if ((x < 0 || x >= BOARD_WIDTH) ||
-		(z < 0 || z >= BOARD_HEIGHT))
-	{
-		return TileType::INVALID;
-	}
-
-	return m_tiles[z][x]->GetType();
-}
-
-Tile* GameBoard::GetRandomTileOfType(TileType type)
-{
-	std::vector<Tile*> shortlist;
-
-	// Find all tiles matching the type we want
-	for (unsigned int z = 0; z < BOARD_HEIGHT; z++)
-	{
-		for (unsigned int x = 0; x < BOARD_WIDTH; x++)
-		{
-			if (m_tiles[z][x]->GetType() == type )
+			if (i == -70 || j == -70 || i==70||j==70)
 			{
-				shortlist.push_back(m_tiles[z][x]);
+				m_wall.push_back( new StaticObject(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
+					m_diffuseTexturedShader,
+					m_textureManager->GetTexture("Assets/Textures/tile_blue.png"),
+					Vector3(i,0,j)));
 			}
 		}
 	}
-
-	// There are no more tiles left matching this type
-	if (shortlist.size() == 0)
-		return NULL;
-
-
-	// Return a random tile from the shortlist
-	return shortlist[MathsHelper::RandomRange(0, shortlist.size() - 1)];
 }
 
-void GameBoard::GetRandomMonsterTilePosition()
+void GameBoard::InitBullet(Vector3 position, Vector3 heading)
 {
-	for (int i = 0; i < MonsterCout; i++)
-	{
-		int x, z;
-
-		x = MathsHelper::RandomRange(1, BOARD_WIDTH-2);
-		z = MathsHelper::RandomRange(1, BOARD_HEIGHT-2);
-
-		if (m_tiles[z][x]->GetType()==TileType::NORMAL)
-		{
-			m_tiles[z][x]->SetType(TileType::MONSTER_VAR1);
-		}
-		else { i--; }
-	}
-	
-	/*
-	set colour
-	for (int i = 0; i < HealCout; i++)
-	{
-		int x, z;
-
-		x = MathsHelper::RandomRange(1, BOARD_WIDTH - 2);
-		z = MathsHelper::RandomRange(1, BOARD_HEIGHT - 2);
-
-		if (m_tiles[z][x]->GetType() == TileType::NORMAL)
-		{
-			m_tiles[z][x]->SetType(TileType::HEALTH);
-		}
-		else { i--; }
-	}
-	for (int i = 0; i < DamageCout; i++)
-	{
-		int x, z;
-
-		x = MathsHelper::RandomRange(1, BOARD_WIDTH - 2);
-		z = MathsHelper::RandomRange(1, BOARD_HEIGHT - 2);
-
-		if (m_tiles[z][x]->GetType() == TileType::NORMAL)
-		{
-			m_tiles[z][x]->SetType(TileType::DAMAGE);
-		}
-		else { i--; }
-	}
-	for (int i = 0; i < TeleportCout; i++)
-	{
-		int x, z;
-
-		x = MathsHelper::RandomRange(1, BOARD_WIDTH - 2);
-		z = MathsHelper::RandomRange(1, BOARD_HEIGHT - 2);
-
-		if (m_tiles[z][x]->GetType() == TileType::NORMAL)
-		{
-			m_tiles[z][x]->SetType(TileType::TELEPORT);
-		}
-		else { i--; }
-
-	}*/
-
+	//for (int i = 0; i < 20; i++) 
+	//{
+		m_bullet.push_back(new Bullet(
+			m_meshManager->GetMesh("Assets/Meshes/bullet.obj"),
+			m_diffuseTexturedShader,
+			m_textureManager->GetTexture("Assets/Textures/gradient_redDarker.png"),
+			position,
+			heading));
+	//}
 }
+
+
 

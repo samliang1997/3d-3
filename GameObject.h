@@ -3,7 +3,7 @@
 
 #include "Direct3D.h"
 #include "Mesh.h"
-#include "Collision.h"
+#include "Collisions.h"
 
 class GameObject
 {
@@ -56,7 +56,6 @@ public:
 	void SetTexture(Texture* texture) { m_texture = texture; }
 	void SetShader(Shader* shader) { m_shader = shader; }
 
-	//Collision
 	CBoundingBox GetBounds() { return m_boundingBox; }
 };
 

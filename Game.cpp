@@ -20,6 +20,8 @@ Game::Game()
 	m_diffuseTexturedShader = NULL;
 	m_spriteBatch = NULL;
 	m_arialFont18 = NULL;
+	m_player = NULL;
+	m_collisionManager = NULL;
 	
 }
 
@@ -32,6 +34,7 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 	m_meshManager = new MeshManager();
 	m_textureManager = new TextureManager();	
 	
+
 	if (!InitShaders())
 		return false;
 
@@ -49,8 +52,8 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 	RefershUI();
 
 	m_currentCam = new FirstPerson(m_input, Vector3());
-
-	m_collisionManager = new CollisionManager(m_playerCollision, &m_heal);
+	m_collisionManager = new CollisionManager(m_player, m_gameboard);
+	
 
 	return true;
 }
@@ -199,112 +202,18 @@ void Game::RefershUI()
 
 void Game::InitGameWorld()
 {	
+	m_gameboard = new GameBoard(m_meshManager, m_diffuseTexturedShader, m_textureManager);
 	InitPlayer();
-	//InitWall();
-	InitHealthCapsule();
-	InitMonster();
-
-	m_ground=new StaticObject(m_meshManager->GetMesh("Assets/Meshes/ground.obj"),
-		m_diffuseTexturedShader,
-		m_textureManager->GetTexture("Assets/Textures/ground.png"));
-
-	m_gameObjects.push_back(m_ground);
-
-	m_ground->SetXScale(0.5f);
-	m_ground->SetZScale(0.5f);
-
-	m_wall = new StaticObject(m_meshManager->GetMesh("Assets/Meshes/wall.obj"),
-			m_diffuseTexturedShader,
-			m_textureManager->GetTexture("Assets/Textures/tile_disabled.png"),
-			Vector3(0,-1,0));
-
-	m_gameObjects.push_back(m_wall);
-
-	m_wall->SetXScale(0.235f);
-	m_wall->SetYScale(0.5f);
-	m_wall->SetZScale(0.235f);
-
-	for (int i = 0; i<200; i++)
-	{
-		Vector3 position = Vector3(MathsHelper::RandomRange(-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-
-		m_disableditem = new StaticObject(m_meshManager->GetMesh("Assets/Meshes/wall_tile.obj"),
-			m_diffuseTexturedShader,
-			m_textureManager->GetTexture("Assets/Textures/tile_disabled.png"),
-			position);
-
-		m_gameObjects.push_back(m_disableditem);
-	}
 }
-
-/*void Game::InitWall()
-{
-
-}*/
 
 void Game::InitPlayer()
 {
 	m_player = new Player(m_meshManager->GetMesh("Assets/Meshes/player_capsule.obj"),
 		m_diffuseTexturedShader,
 		m_textureManager->GetTexture("Assets/Textures/tile_white.png"),
-		Vector3(0, 0, -10),
-		m_input);
-
-}
-
-void Game::InitMonster()
-{
-	Vector3 position1 = Vector3(MathsHelper::RandomRange(-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-
-	 m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
-					m_diffuseTexturedShader,
-					m_textureManager->GetTexture("Assets/Textures/gradient_red.png"),
-					position1,m_player));
-
-	 Vector3 position2 = Vector3(MathsHelper::RandomRange(-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-	m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
-		m_diffuseTexturedShader,
-		m_textureManager->GetTexture("Assets/Textures/gradient_redDarker.png"),
-		position2, m_player));
-
-
-	Vector3 position3 = Vector3(MathsHelper::RandomRange (-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-	m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
-		m_diffuseTexturedShader,
-		m_textureManager->GetTexture("Assets/Textures/gradient_redLighter.png"),
-		position3, m_player));
-
-	Vector3 position4 = Vector3(MathsHelper::RandomRange (- 70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-	m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
-		m_diffuseTexturedShader,
-		m_textureManager->GetTexture("Assets/Textures/gradient_redOrange.png"),
-		position4, m_player));
-
-	Vector3 position5 = Vector3(MathsHelper::RandomRange(-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-	m_monster.push_back(new Monster(m_meshManager->GetMesh("Assets/Meshes/enemy.obj"),
-		m_diffuseTexturedShader,
-		m_textureManager->GetTexture("Assets/Textures/gradient_redPink.png"),
-		position5, m_player));
-
-	//m_monsterCollision.push_back(m_monster);
-	//m_gameObjects.push_back(monster);
-	
-}
-
-void Game::InitHealthCapsule()
-{
-	for (int i=0;i<20 ;i++)
-	{
-		Vector3 position = Vector3(MathsHelper::RandomRange(-70.0f, 70.0f), 0.0f, MathsHelper::RandomRange(-70.0f, 70.0f));
-
-		HealthCapsule* healthCapsule = new HealthCapsule(m_meshManager->GetMesh("Assets/Meshes/player_capsule.obj"),
-			m_diffuseTexturedShader,
-			m_textureManager->GetTexture("Assets/Textures/tile_green.png"),
-			position);
-
-		m_heal.push_back(healthCapsule);
-		m_gameObjects.push_back(healthCapsule);
-	}
+		Vector3(0, 0, 0),
+		m_input,
+		m_gameboard);
 }
 
 void Game::Update(float timestep)
@@ -314,18 +223,9 @@ void Game::Update(float timestep)
 
 	m_input->BeginUpdate();
 	
+	m_gameboard->Update(timestep, m_player->GetPosition());
+
 	m_player->Update(timestep);
-
-	
-	for (unsigned int i = 0; i < m_gameObjects.size(); i++)
-	{
-		m_gameObjects[i]->Update(timestep);
-	}
-
-	for (unsigned int i = 0; i < m_monster.size(); i++)
-	{
-		m_monster[i]->Update(timestep);
-	}
 
 	m_collisionManager->CheckCollisions();
 
@@ -336,7 +236,7 @@ void Game::Update(float timestep)
 	// Sometimes creating a whole new child of Camera is a bit overkill. Here
 	// we're just telling our existing camera what to do (it has been modified to include
 	// the catch-up mode using LERP and also sets its look-at internally each frame).
-	m_currentCam->SetTargetPosition(m_player->GetPosition()+ Vector3(0.0f, 0.5f, 0.1f));
+	m_currentCam->SetPosition(m_player->GetPosition()+ Vector3(0.0f, 0.5f, 0.1f));
 	m_currentCam->Update(timestep);
 	
 	m_input->EndUpdate();
@@ -345,19 +245,12 @@ void Game::Update(float timestep)
 void Game::Render()
 {
 	m_renderer->BeginScene(0.2f, 0.2f, 0.2f, 1.0f);
-	
-	for (unsigned int i = 0; i < m_gameObjects.size(); i++)
-	{
-		m_gameObjects[i]->Render(m_renderer, m_currentCam);
-	}
 
-	//m_player->Render(m_renderer, m_currentCam);
+	m_gameboard->Render(m_renderer, m_currentCam);
 
-	for (unsigned int i = 0; i < m_monster.size(); i++)
-	{
-		m_monster[i]->Render(m_renderer, m_currentCam);
-	}
-	
+	m_player->Render(m_renderer, m_currentCam);
+
+
 	DrawUI();
 
 	m_renderer->EndScene();		
@@ -412,20 +305,16 @@ void Game::CheckGameOver()
 
 void Game::Shutdown()
 {
-
-	for (unsigned int i = 0; i < m_gameObjects.size(); i++)
+	if(m_gameboard)
 	{
-		delete m_gameObjects[i];
-		//m_gameObjects[i] = NULL;
+		delete m_gameboard;
+		m_gameboard = NULL;
 	}
-
-	m_gameObjects.empty();
-
 	
-	for (unsigned int i = 0; i < m_monster.size(); i++)
+	if (m_player)
 	{
-		delete m_monster[i];
-		
+		delete m_player;
+		m_player = NULL;
 	}
 
 	if (m_currentCam)

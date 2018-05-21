@@ -2,10 +2,10 @@
 #define COLLISION_MANAGER_H
 
 #include <vector>
-#include "Collision.h"
+#include "Collisions.h"
 #include "Player.h"
-#include "HealthCapsule.h"
-#include "GameObject.h"
+#include "GameBoard.h"
+
 
 using namespace std;
 #define MAX_ALLOWED_COLLISIONS 2048
@@ -13,9 +13,8 @@ using namespace std;
 class CollisionManager
 {
 private:
-	Player* m_playerCollision;
-	vector<HealthCapsule*>* m_heal; //new add
-	vector<GameObject*>* m_itemBoxes;//new add
+	Player* m_player;
+	GameBoard* m_gameboard;
 
 	GameObject* m_currentCollisions[MAX_ALLOWED_COLLISIONS];
 
@@ -31,11 +30,13 @@ private:
 	void AddCollision(GameObject* first, GameObject* second);
 
 	// Collision check helpers
-	void PlayerToItemBox();
-	//void KartToKart();
+	void PlayerToMonster();
+	void PlayerToHeal();
+	void PlayerToWall();
+	void PlayerToDisabled();
 
 public:
-	CollisionManager(Player* player, vector<HealthCapsule*>* itemBoxes);//new add
+	CollisionManager(Player* player, GameBoard* gameboard);
 	void CheckCollisions();
 
 };

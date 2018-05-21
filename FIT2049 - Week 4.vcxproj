@@ -65,12 +65,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CollisionManager.cpp" />
+    <ClCompile Include="Collisions.cpp" />
     <ClCompile Include="Direct3D.cpp" />
     <ClCompile Include="FirstPerson.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameBoard.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="HealthCapsule.cpp" />
     <ClCompile Include="InputController.cpp" />
@@ -83,12 +85,14 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TexturedShader.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Wall.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Collision.h" />
     <ClInclude Include="CollisionManager.h" />
+    <ClInclude Include="Collisions.h" />
     <ClInclude Include="Direct3D.h" />
     <ClInclude Include="DirectXTK\CommonStates.h" />
     <ClInclude Include="DirectXTK\SimpleMath.h" />
@@ -97,6 +101,7 @@
     <ClInclude Include="DirectXTK\WICTextureLoader.h" />
     <ClInclude Include="FirstPerson.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameBoard.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="HealthCapsule.h" />
     <ClInclude Include="Monster.h" />
@@ -110,6 +115,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TexturedShader.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Wall.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
