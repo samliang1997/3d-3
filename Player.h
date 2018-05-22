@@ -19,7 +19,7 @@ private:
 	// A Player should listen for its own input
 	InputController* m_input;
 
-	
+	// player move
 	float m_moveSpeed;
 	Vector3 m_loaclForward;
 	Vector3 m_loaclbackward;
@@ -33,13 +33,15 @@ private:
 	float m_health;
 	int m_score;
 	int m_monstersDefeated;
-	
+	int PlayershootCount = 0;
+
 	CBoundingBox m_boundingBox;
 
 	GameBoard* m_currentBoard;
+
 	// For Monster battles
 	void BeHit(int amount);
-	void DoMonsterBattle();
+
 
 public:
 	Player();

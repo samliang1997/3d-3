@@ -28,9 +28,6 @@ Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, I
 
 	m_heading = 0.0f;
 	m_rotationSpeed = 1.0f;
-	//m_monstersDefeated = 0;
-	//m_movesRemaining = MAX_MOVES;
-	//m_position = Vector3::Zero;
 
 	m_currentBoard = board;
 	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
@@ -65,11 +62,16 @@ void Player::Update(float timestep)
 	{
 		m_position += m_loaclright * m_moveSpeed * timestep;
 	}
-
+	PlayershootCount++;
 	if(m_input->GetMouseUp(0))
 	{
-		m_currentBoard->InitBullet(m_position, m_loaclForward); 
+		if (PlayershootCount >= 60)
+		{
+			m_currentBoard->InitBullet(m_position, m_loaclForward);
+			PlayershootCount = 0;
+		}
 	}
+
 	m_boundingBox.SetMin(m_position + m_mesh->GetMin());
 	m_boundingBox.SetMax(m_position + m_mesh->GetMax());
 
@@ -113,41 +115,3 @@ void Player::BeHit(int amount)
 	// "abs" keeps a value positive
 	m_health -= abs(amount);
 }
-
-/*void Player::DoMonsterBattle()
-{
-	// A battle takes place within a single frame.
-
-	// Slightly hacky, but we only need a Monster when a battle is about to occur.
-	// The Player creates a Monster then fights it. Asking the GameBoard for a Monster
-	// would perhaps be a more proper way of doing this, however storing Monsters in Tiles
-	// would be unnecessary work for this implementation.
-	
-	Monster monster = Monster();
-	
-
-	// We keep fighting until someone dies
-	while (m_health > 0 && monster.IsAlive())
-	{
-		int playerAttackValue = Attack();
-		int monsterAttackValue = monster.Attack();
-
-		if (playerAttackValue > monsterAttackValue)
-		{
-			// Player wins the round - the monster will receive some damage
-			monster.BeHit(playerAttackValue - monsterAttackValue);
-		}
-		else
-		{
-			// Monster wins round - the player will receive some damage
-			BeHit(monsterAttackValue - playerAttackValue);
-		}
-	}
-
-	if (!monster.IsAlive())
-	{
-		// If the player won the overall battle, increment our score
-		m_score += monster.GetSkill();
-		m_monstersDefeated++;
-	}
-}*/

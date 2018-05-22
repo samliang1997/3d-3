@@ -34,6 +34,7 @@ private:
 	//Shaders
 	Shader* m_diffuseTexturedShader;
 
+	//gameobject
 	StaticObject* m_ground;
 	vector<StaticObject*> m_wall;
 	vector<StaticObject*> m_disableditem;
@@ -49,6 +50,7 @@ private:
 	void InitGameWorld();
 	void InitWall();
 	
+	int monsterShootCount = 0;
 
 public:
 	GameBoard();

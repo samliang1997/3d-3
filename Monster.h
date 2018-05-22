@@ -17,6 +17,7 @@ private:
 	int m_skill;
 	bool m_isAlive;
 	Vector3 m_objectTolookAt;
+	float m_movespeed;
 
 	CBoundingBox m_boundingBox;
 public:
@@ -27,12 +28,12 @@ public:
 	int Attack();
 	void BeHit(int amount);
 
-	void MonFaceTo();
+	void MonFaceTo(float timestep);
 	
 
 	bool IsAlive() { return m_isAlive; }
 	int GetSkill() { return m_skill; }
-	//Vector3 GetHeading() { return directionToPlayer; }
+	float GetMovespeed() { return m_movespeed; }
 
 	void Update(float timestep);
 	void Update(float timestep, Vector3 playerposition);

@@ -15,7 +15,7 @@ GameBoard::GameBoard(MeshManager* meshManager, Shader* shader, TextureManager* t
 	m_textureManager = textureManager;
 	m_diffuseTexturedShader = shader;
 
-
+	
 	Generate();
 }
 
@@ -25,6 +25,7 @@ GameBoard::~GameBoard()
 
 void GameBoard::Update(float timestep,Vector3 playerposition)
 {
+
 	m_ground->Update(timestep);
 
 	for (int i = 0; i < m_disableditem.size(); i++)
@@ -43,7 +44,14 @@ void GameBoard::Update(float timestep,Vector3 playerposition)
 	for (int i = 0; i < m_monster.size(); i++)
 	{ 
 		m_monster[i]->Update(timestep, playerposition);
-		//InitBullet(m_monster[i]->GetPosition(), m_monster[i]->);
+	
+		monsterShootCount++;
+
+		if (monsterShootCount >= 180)
+		{
+			InitBullet(m_monster[MathsHelper::RandomRange(0,i)]->GetPosition(), (playerposition - m_monster[MathsHelper::RandomRange(0, i)]->GetPosition()));
+			monsterShootCount = 0;
+		}
 	}
 
 	for (int i = 0; i < m_bullet.size(); i++)
@@ -155,15 +163,12 @@ void GameBoard::InitWall()
 
 void GameBoard::InitBullet(Vector3 position, Vector3 heading)
 {
-	//for (int i = 0; i < 20; i++) 
-	//{
-		m_bullet.push_back(new Bullet(
+	m_bullet.push_back(new Bullet(
 			m_meshManager->GetMesh("Assets/Meshes/bullet.obj"),
 			m_diffuseTexturedShader,
 			m_textureManager->GetTexture("Assets/Textures/gradient_redDarker.png"),
 			position,
 			heading));
-	//}
 }
 
 

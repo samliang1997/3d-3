@@ -1,11 +1,11 @@
 #ifndef COLLISION_MANAGER_H
 #define COLLISION_MANAGER_H
 
-#include <vector>
+
 #include "Collisions.h"
 #include "Player.h"
 #include "GameBoard.h"
-
+#include <vector>
 
 using namespace std;
 #define MAX_ALLOWED_COLLISIONS 2048

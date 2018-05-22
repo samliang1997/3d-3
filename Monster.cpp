@@ -27,7 +27,7 @@ void Monster::BeHit(int amount)
 	}
 }
 
-void Monster::MonFaceTo()
+void Monster::MonFaceTo(float timestep)
 {
 	//m_objectToLookAt must be set as the player object when the game is initialised
 	// directionToPlayer = the vector from the Enemy to the player/ monster heading
@@ -39,6 +39,7 @@ void Monster::MonFaceTo()
 	// There are a couple of ways to do this, atan2 is fairly straightforward
 	m_rotY = atan2(directionToPlayer.x, directionToPlayer.z);
 
+	m_position += directionToPlayer * m_movespeed * timestep;
 
 }
 
@@ -46,14 +47,16 @@ void Monster::MonFaceTo()
 Monster::Monster(Mesh* mesh, Shader* shader, Texture* texture,Vector3 position):GameObject(mesh,shader,texture,position)
 {
 	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
+	m_movespeed = 0.6f;
 }
 
 
 void Monster::Update(float timestep, Vector3 playerposition)
 {
 	m_objectTolookAt = playerposition;
-	MonFaceTo();
+	MonFaceTo(timestep);
 
+	
 	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 

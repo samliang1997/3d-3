@@ -33,7 +33,7 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 	m_input = input;
 	m_meshManager = new MeshManager();
 	m_textureManager = new TextureManager();	
-	
+	//m_collisionManager = new CollisionManager(m_player, m_gameboard);
 
 	if (!InitShaders())
 		return false;
@@ -48,11 +48,12 @@ bool Game::Initialise(Direct3D* renderer, InputController* input)
 	LoadFonts();
 	InitUI();
 	InitGameWorld();
-	
+	m_collisionManager = new CollisionManager(m_player, m_gameboard);
+
 	RefershUI();
 
 	m_currentCam = new FirstPerson(m_input, Vector3());
-	m_collisionManager = new CollisionManager(m_player, m_gameboard);
+	//m_collisionManager = new CollisionManager(m_player, m_gameboard);
 	
 
 	return true;
@@ -249,7 +250,6 @@ void Game::Render()
 	m_gameboard->Render(m_renderer, m_currentCam);
 
 	m_player->Render(m_renderer, m_currentCam);
-
 
 	DrawUI();
 
