@@ -50,8 +50,11 @@ private:
 	void InitGameWorld();
 	void InitWall();
 	
-	int monsterShootCount = 0;
-
+	int monsterShootCount1 = 0;
+	int monsterShootCount2 = 0;
+	int monsterShootCount3 = 0;
+	int monsterShootCount4 = 0;
+	int monsterShootCount5 = 0;
 public:
 	GameBoard();
 	GameBoard(MeshManager* meshManager, Shader* diffuseTexturedShader, TextureManager* textureManager);

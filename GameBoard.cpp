@@ -45,13 +45,48 @@ void GameBoard::Update(float timestep,Vector3 playerposition)
 	{ 
 		m_monster[i]->Update(timestep, playerposition);
 	
-		monsterShootCount++;
+		monsterShootCount1++;
+		monsterShootCount2++;
+		monsterShootCount3++;
+		monsterShootCount4++;
+		monsterShootCount5++;
 
-		if (monsterShootCount >= 180)
+		if (monsterShootCount1 >= 2400)
 		{
-			InitBullet(m_monster[MathsHelper::RandomRange(0,i)]->GetPosition(), (playerposition - m_monster[MathsHelper::RandomRange(0, i)]->GetPosition()));
-			monsterShootCount = 0;
+			Vector3 monsterheading = playerposition - m_monster[0]->GetPosition();
+			monsterheading.Normalize();
+			InitBullet(m_monster[0]->GetPosition(), monsterheading);
+			monsterShootCount1 = 0;
 		}
+		else if (monsterShootCount2 >= 2400) 
+		{
+			Vector3 monsterheading = playerposition - m_monster[1]->GetPosition();
+			monsterheading.Normalize();
+			InitBullet(m_monster[1]->GetPosition(), monsterheading);
+			monsterShootCount2 = 0;
+		}
+		else if (monsterShootCount3 >= 2400)
+		{
+			Vector3 monsterheading = playerposition - m_monster[2]->GetPosition();
+			monsterheading.Normalize();
+			InitBullet(m_monster[2]->GetPosition(), monsterheading);
+			monsterShootCount3 = 0;
+		}
+		else if (monsterShootCount4 >= 2400)
+		{
+			Vector3 monsterheading = playerposition - m_monster[3]->GetPosition();
+			monsterheading.Normalize();
+			InitBullet(m_monster[3]->GetPosition(), monsterheading);
+			monsterShootCount4 = 0;
+		}
+		else if (monsterShootCount5 >= 2400)
+		{
+			Vector3 monsterheading = playerposition - m_monster[4]->GetPosition();
+			monsterheading.Normalize();
+			InitBullet(m_monster[4]->GetPosition(), monsterheading);
+			monsterShootCount5 = 0;
+		}
+		
 	}
 
 	for (int i = 0; i < m_bullet.size(); i++)

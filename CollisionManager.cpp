@@ -61,15 +61,16 @@ void CollisionManager::AddCollision(GameObject* first, GameObject* second)
 
 void CollisionManager::PlayerToHeal()
 {
-	CBoundingBox playerCollision = m_player->GetBounds();
+	//CBoundingBox playerCollision = m_player->GetBounds();
 
 	for (unsigned int i = 0; i < m_gameboard->GetHeal().size(); i++) 
 	{
+		CBoundingBox playerCollision = m_player->GetBounds();
 		CBoundingBox heal = m_gameboard->GetHeal()[i]->GetBounds();
 
 		bool isColliding = CheckCollision(playerCollision, heal);
 
-		bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, (m_gameboard->GetHeal())[i]);
+		bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, m_gameboard->GetHeal()[i]);
 
 		if (isColliding)
 		{
@@ -85,8 +86,7 @@ void CollisionManager::PlayerToHeal()
 			}
 			else
 			{
-				// We are colliding this frame and we weren't last frame - that's a collision enter
-	
+				// We are colliding this frame and we weren't last frame - that's a collision enter	
 				OutputDebugString("Kart-Kart Collision Enter\n");
 			
 			}
@@ -96,7 +96,6 @@ void CollisionManager::PlayerToHeal()
 			if (wasColliding)
 			{
 				// We aren't colliding this frame but we were last frame - that's a collision exit
-
 				OutputDebugString("Kart-Kart Collision Exit\n");
 			}
 		}
