@@ -102,3 +102,4 @@ bool CheckRay(const CRay& ray, const CBoundingBox& bb, Vector3* hitPoint);
 bool CheckRay(const CRay& ray, const CPlane& plane, Vector3* hitPoint);
 
 #endif
+

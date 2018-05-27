@@ -134,10 +134,11 @@ void GameBoard::Generate()
 	m_ground->SetXScale(0.5f);
 	m_ground->SetZScale(0.5f);
 
-	InitGameWorld();
-	InitWall();
 	InitMonster();
 	InitHealthCapsule();
+	InitGameWorld();
+	InitWall();
+
 }
 
 void GameBoard::InitGameWorld()

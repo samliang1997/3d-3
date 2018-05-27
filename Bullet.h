@@ -23,7 +23,7 @@ private:
 
 	int m_damage;
 
-	CBoundingBox m_boundingBox;
+
 };
 
 #endif

@@ -51,7 +51,7 @@ void Monster::Update(float timestep, Vector3 playerposition)
 	MonFaceTo(timestep);
 
 	
-	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
+	
 }
 
 void Monster::Update(float timestep)

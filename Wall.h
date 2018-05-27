@@ -12,10 +12,8 @@ public:
 
 	void Update(float timestep);
 
-	CBoundingBox GetBounds() { return m_boundingBox; }
-
 private:
-	CBoundingBox m_boundingBox;
+
 };
 
 #endif

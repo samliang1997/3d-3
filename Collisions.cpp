@@ -38,9 +38,9 @@ bool CheckCollision(const CBoundingSphere& sphere, const CBoundingBox& bb)
 }
 bool CheckCollision(const CBoundingBox& bb, const Vector3& point)
 {
-	return	(point.x > bb.GetMin().x && point.x < bb.GetMax().x) &&
-			(point.y > bb.GetMin().y && point.y < bb.GetMax().y) &&
-			(point.z > bb.GetMin().z && point.z < bb.GetMax().z);
+	return (point.x > bb.GetMin().x && point.x < bb.GetMax().x) &&
+		(point.y > bb.GetMin().y && point.y < bb.GetMax().y) &&
+		(point.z > bb.GetMin().z && point.z < bb.GetMax().z);
 }
 bool CheckCollision(const CBoundingBox& bb1, const CBoundingBox& bb2)
 {

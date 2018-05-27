@@ -1,9 +1,9 @@
 #include "CollisionManager.h"
 
-CollisionManager::CollisionManager(Player* player, GameBoard* gameboard)
+CollisionManager::CollisionManager(Player* player, GameBoard* board)
 {
-	m_player = player;
-	m_gameboard = gameboard;
+	m_character = player;
+	m_board = board;
 
 	// Clear our arrays to 0 (NULL)
 	memset(m_currentCollisions, 0, sizeof(m_currentCollisions));
@@ -15,10 +15,7 @@ CollisionManager::CollisionManager(Player* player, GameBoard* gameboard)
 void CollisionManager::CheckCollisions()
 {
 	// Check kart to item box collisions
-	PlayerToHeal();
-	PlayerToMonster();
-	//PlayerToWall();
-	//PlayerToDisabled();
+	playerToHeal();
 
 	// Move all current collisions into previous
 	memcpy(m_previousCollisions, m_currentCollisions, sizeof(m_currentCollisions));
@@ -59,117 +56,46 @@ void CollisionManager::AddCollision(GameObject* first, GameObject* second)
 	m_nextCurrentCollisionSlot += 2;
 }
 
-void CollisionManager::PlayerToHeal()
+void CollisionManager::playerToHeal()
 {
-	//CBoundingBox playerCollision = m_player->GetBounds();
+	// We'll check each kart against every item box
+	// Note this is not overly efficient, both in readability and runtime performance
 
-	for (unsigned int i = 0; i < m_gameboard->GetHeal().size(); i++) 
-	{
-		CBoundingBox playerCollision = m_player->GetBounds();
-		CBoundingBox heal = m_gameboard->GetHeal()[i]->GetBounds();
-
-		bool isColliding = CheckCollision(playerCollision, heal);
-
-		bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, m_gameboard->GetHeal()[i]);
-
-		if (isColliding)
+		for (unsigned int i = 0; i < m_board->GetMonster().size(); i++)
 		{
-			// Register the collision
-			AddCollision(m_player, m_gameboard->GetHeal()[i]);//NEW ADD
-
-			if (wasColliding)
-			{
-				// We are colliding this frame and we were also colliding last frame - that's a collision stay
-				// Tell the item box a kart has collided with it (we could pass it the actual kart too if we like)
-				OutputDebugString("Kart-Kart Collision Stay\n");
-				
-			}
-			else
-			{
-				// We are colliding this frame and we weren't last frame - that's a collision enter	
-				OutputDebugString("Kart-Kart Collision Enter\n");
 			
-			}
-		}
-		else
-		{
-			if (wasColliding)
-			{
-				// We aren't colliding this frame but we were last frame - that's a collision exit
-				OutputDebugString("Kart-Kart Collision Exit\n");
-			}
-		}
-	}
-		
-}
+			// Don't need to store pointer to these objects again but favouring clarity
+			// Can't index into these directly as they're a pointer to a vector. We need to dereference them first
+			//GameBoard* boardcollision = (*m_board)[i];
+			//Player* player= m_character;
 
-void CollisionManager::PlayerToMonster()
-{
-	CBoundingBox playerCollision = m_player->GetBounds();
+			CBoundingBox PlayerBounds = m_character->GetBounds();
+			CBoundingBox HealBounds = m_board->GetMonster()[i]->GetBounds();
 
-	for (unsigned int i = 0; i < m_gameboard->GetMonster().size(); i++)
-	{
-		CBoundingBox monster = m_gameboard->GetMonster()[i]->GetBounds();
+          //aaaaaaaaaaaaaaaaaaaaaaa OutputDebugString("playerToHeal()\n");
 
-		bool isColliding = CheckCollision(playerCollision, monster);
-
-		bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, (m_gameboard->GetMonster())[i]);
-
-		if (isColliding)
-		{
-			// Register the collision
-			AddCollision(m_player, m_gameboard->GetMonster()[i]);//NEW ADD
-
-			if (wasColliding)
-			{
-				// We are colliding this frame and we were also colliding last frame - that's a collision stay
-				// Tell the item box a kart has collided with it (we could pass it the actual kart too if we like)
-				OutputDebugString("Kart-Kart Collision Stay\n");				
-			}
-			else
-			{
-				// We are colliding this frame and we weren't last frame - that's a collision enter
-				OutputDebugString("Kart-Kart Collision Enter\n");
-			}
-		}
-		else
-		{
-			if (wasColliding)
-			{
-				// We aren't colliding this frame but we were last frame - that's a collision exit			
-				OutputDebugString("Kart-Kart Collision Exit\n");
-			}
-		}
-	}
-}
-
-void CollisionManager::PlayerToWall()
-	{
-		CBoundingBox playerCollision = m_player->GetBounds();
-
-		for (unsigned int i = 0; i < m_gameboard->GetWall().size(); i++)
-		{
-			CBoundingBox monster = m_gameboard->GetWall()[i]->GetBounds();
-
-			bool isColliding = CheckCollision(playerCollision, monster);
-
-			bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, (m_gameboard->GetWall())[i]);
+			// Are they colliding this frame?
+			bool isColliding = CheckCollision(PlayerBounds, HealBounds);
+			
+			// Were they colliding last frame?
+			bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_character, m_board->GetMonster()[i]);
 
 			if (isColliding)
 			{
+				OutputDebugString("if (isColliding)\n");
 				// Register the collision
-				AddCollision(m_player, m_gameboard->GetWall()[i]);//NEW ADD
+				AddCollision(m_character, m_board->GetMonster()[i]);
 
 				if (wasColliding)
 				{
 					// We are colliding this frame and we were also colliding last frame - that's a collision stay
 					// Tell the item box a kart has collided with it (we could pass it the actual kart too if we like)
-					OutputDebugString("Kart-Kart Collision Stay\n");					
+					OutputDebugString("Kart-Kart Collision Stay\n");
 				}
 				else
 				{
-					// We are colliding this frame and we weren't last frame - that's a collision enter					
-					OutputDebugString("Kart-Kart Collision Enter\n");					
+					// We are colliding this frame and we weren't last frame - that's a collision enter
+					OutputDebugString("Kart-Kart Collision Enter\n");
 				}
 			}
 			else
@@ -181,44 +107,4 @@ void CollisionManager::PlayerToWall()
 				}
 			}
 		}
-}
-
-void CollisionManager::PlayerToDisabled()
-{
-	CBoundingBox playerCollision = m_player->GetBounds();
-
-	for (unsigned int i = 0; i < m_gameboard->GetDisabledItem().size(); i++)
-	{
-		CBoundingBox monster = m_gameboard->GetDisabledItem()[i]->GetBounds();
-
-		bool isColliding = CheckCollision(playerCollision, monster);
-
-		bool wasColliding = ArrayContainsCollision(m_previousCollisions, m_player, (m_gameboard->GetDisabledItem())[i]);
-
-		if (isColliding)
-		{
-			// Register the collision
-			AddCollision(m_player, m_gameboard->GetDisabledItem()[i]);//NEW ADD
-
-			if (wasColliding)
-			{
-				// We are colliding this frame and we were also colliding last frame - that's a collision stay
-				// Tell the item box a kart has collided with it (we could pass it the actual kart too if we like)
-				OutputDebugString("Kart-Kart Collision Stay\n");
-			}
-			else
-			{
-				// We are colliding this frame and we weren't last frame - that's a collision enter					
-				OutputDebugString("Kart-Kart Collision Enter\n");
-			}
-		}
-		else
-		{
-			if (wasColliding)
-			{
-				// We aren't colliding this frame but we were last frame - that's a collision exit
-				OutputDebugString("Kart-Kart Collision Exit\n");
-			}
-		}
-	}
 }

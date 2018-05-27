@@ -22,6 +22,7 @@
 #include "StaticObject.h"
 
 
+
 #include <vector>
 
 using namespace std;
@@ -64,6 +65,7 @@ public:
 	void Render(Direct3D* renderer, Camera* camera);
 
 	void InitBullet(Vector3 position, Vector3 heading);
+
 	vector<HealthCapsule*> GetHeal() { return m_heal; }
 	vector<Monster*> GetMonster() { return m_monster; }
 	vector<StaticObject*> GetWall() { return m_wall; }

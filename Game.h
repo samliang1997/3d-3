@@ -17,11 +17,10 @@
 #include "TextureManager.h"
 #include "GameObject.h"
 #include "StaticObject.h"
-#include "Collisions.h"
-#include "CollisionManager.h"
 #include "Player.h"
 #include "GameBoard.h"
 #include "Monster.h"
+#include "CollisionManager.h"
 #include <vector>
 
 #include "DirectXTK/SpriteBatch.h"
@@ -62,6 +61,8 @@ private:
 	GameBoard* m_gameboard;
 	
 	// We also need more specific collections for easier collision checks
+	Player* m_character;
+	vector<GameBoard*> m_board;
 
 	// Splitting initialisation up into several steps
 	bool InitShaders();

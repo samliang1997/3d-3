@@ -28,14 +28,14 @@ public:
 
 	void MonFaceTo(float timestep);
 	
-
+	CBoundingBox GetBounds() { return m_boundingBox; }
 	bool IsAlive() { return m_isAlive; }
 	float GetMovespeed() { return m_movespeed; }
 
 	void Update(float timestep);
 	void Update(float timestep, Vector3 playerposition);
 
-	CBoundingBox GetBounds() { return m_boundingBox; }
+	
 };
 
 #endif

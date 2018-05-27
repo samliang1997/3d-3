@@ -22,8 +22,8 @@ public:
 	~HealthCapsule();
 private:
 	int addHeal;
+	
 	CBoundingBox m_boundingBox;
-
 	int SetaddHeal(int amount) { addHeal = MathsHelper::RandomRange(0, 20); }
 };
 

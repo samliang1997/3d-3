@@ -4,14 +4,10 @@
 /*Player::Player()
 {
 	m_input = NULL;
-	m_moveSpeed = 10.0f;
-	//m_movesRemainingBar = NULL;
+	m_moveSpeed = 10.0f;	
 	m_health = 100.0f;
 	m_score = 0;
-	//m_monstersDefeated = 0;
-	//m_movesRemaining = MAX_MOVES;
 
-	//m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(),m_position + m_mesh->GetMax());
 	
 }*/
 
@@ -30,6 +26,7 @@ Player::Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position, I
 	m_rotationSpeed = 1.0f;
 
 	m_currentBoard = board;
+	
 	m_boundingBox = CBoundingBox(m_position + m_mesh->GetMin(), m_position + m_mesh->GetMax());
 }
 
@@ -46,19 +43,19 @@ void Player::Update(float timestep)
 	m_loaclright = Vector3::TransformNormal(Vector3(1, 0, 0), heading);
 	m_loaclleft = Vector3::TransformNormal(Vector3(-1, 0, 0), heading);
 
-	if (m_input->GetKeyHold(VK_UP))
+	if (m_input->GetKeyHold('W'))
 	{
 		m_position += m_loaclForward * m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold(VK_DOWN))
+	if (m_input->GetKeyHold('S'))
 	{
 		m_position += m_loaclbackward* m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold(VK_LEFT))
+	if (m_input->GetKeyHold('A'))
 	{
 		m_position += m_loaclleft * m_moveSpeed * timestep;
 	}
-	if (m_input->GetKeyHold(VK_RIGHT))
+	if (m_input->GetKeyHold('D'))
 	{
 		m_position += m_loaclright * m_moveSpeed * timestep;
 	}

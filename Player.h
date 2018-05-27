@@ -10,7 +10,6 @@
 
 #include "GameObject.h"
 #include "InputController.h"
-#include "Collisions.h"
 #include "GameBoard.h"
 
 class Player : public GameObject
@@ -35,20 +34,20 @@ private:
 	int m_monstersDefeated;
 	int PlayershootCount = 0;
 
-	CBoundingBox m_boundingBox;
 
 	GameBoard* m_currentBoard;
 
 	// For Monster battles
 	void BeHit(int amount);
 
+	CBoundingBox m_boundingBox;
 
 public:
 	Player();
 	Player(Mesh* mesh, Shader* shader, Texture* texture, Vector3 position,InputController* input, GameBoard* board);
 	~Player();
 
-	void Update(float timestep);
+	virtual void Update(float timestep);
 
 	// The Game class will use these to determine if the game should end
 	float GetHealth() { return m_health; }
@@ -56,8 +55,8 @@ public:
 	// Game will use these to output info to the player
 	int GetNumberOfMonstersDefeated() { return m_monstersDefeated; }
 	int GetScore() { return m_score; }
-
-	CBoundingBox GetBounds() { return m_boundingBox;}
+	
+	CBoundingBox GetBounds() { return m_boundingBox; }
 
 	void OnKartCollisionEnter(Player* other);
 	void OnKartCollisionStay(Player* other);

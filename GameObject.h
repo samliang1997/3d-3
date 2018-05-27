@@ -17,7 +17,7 @@ protected:
 	Texture* m_texture;
 	Shader* m_shader;
 
-	CBoundingBox m_boundingBox;
+	
 
 public:
 	GameObject();
@@ -56,7 +56,7 @@ public:
 	void SetTexture(Texture* texture) { m_texture = texture; }
 	void SetShader(Shader* shader) { m_shader = shader; }
 
-	CBoundingBox GetBounds() { return m_boundingBox; }
+	
 };
 
 #endif
